@@ -5,23 +5,22 @@
 
 int main(int argc, char** argv)
 {
-    // a damped oscillator has two states, position and velocity
     const size_t state_dim = 4;
     const size_t control_dim = 1;
-    // create a state
-    ct::core::StateVector<state_dim> x;
-    x.setZero(); // we initialize it at 0
-    x(3) = 0.01;
+    ct::core::StateVector<state_dim> x;  // state
 
-    ct::core::ControlVector<control_dim> u;
+    x.setZero();
+    x(3) = -0.01; // angle deviation
+
+    ct::core::ControlVector<control_dim> u;  // control
     u.setZero();
     
-    // create our mass point instance
+    // parameters 
     double m = 1.0;
-    double M = 5.0;
-    double L = 2.0;
-    double g = -9.81;
-    double d = 0.01;
+    double M = 5.0; // mass of a Cart
+    double L = 2.0; // length
+    double g = 9.81;
+    double d = 0.01; // coefficient of a friction
     double dt = 0.001;
     double t = 0.0;
     size_t nSteps = 100;
@@ -35,8 +34,6 @@ int main(int argc, char** argv)
     Eigen::Matrix<double, state_dim, control_dim> B;
     B << 0.0, 1.0/M, 0.0, 1.0/L/M;
 
-    //ct::optcon::TermQuadratic<state_dim, control_dim> quadraticCost;
-
     Eigen::Matrix<double, state_dim, state_dim> Q;
     Q.row(0) << 1.0, 0.0, 0.0, 0.0;
     Q.row(1) << 0.0, 1.0, 0.0, 0.0;
@@ -44,13 +41,13 @@ int main(int argc, char** argv)
     Q.row(3) << 0.0, 0.0, 0.0, 1.0;
 
     Eigen::Matrix<double, control_dim, control_dim> R;
-    R << 0.0001;    
+    R << 0.0001;
 
     std::cout << "A: " << std::endl << A << std::endl << std::endl;
     std::cout << "B: " << std::endl << B << std::endl << std::endl;
     std::cout << "Q: " << std::endl << Q << std::endl << std::endl;
     std::cout << "R: " << std::endl << R << std::endl << std::endl;
-    // design the LQR controller
+
     ct::optcon::LQR<state_dim, control_dim> lqrSolver;
     ct::core::FeedbackMatrix<state_dim, control_dim> K;
     lqrSolver.compute(Q, R, A, B, K);
