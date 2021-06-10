@@ -50,7 +50,9 @@ int main(int argc, char** argv)
 
     ct::optcon::LQR<state_dim, control_dim> lqrSolver;
     ct::core::FeedbackMatrix<state_dim, control_dim> K;
-    lqrSolver.compute(Q, R, A, B, K);
+    bool RisDiagonal = true;
+    bool solveRiccatiIteratively = true;
+    lqrSolver.compute(Q, R, A, B, K, RisDiagonal, solveRiccatiIteratively);
     std::cout << "LQR gain matrix:" << std::endl << K << std::endl;
 
     //integrator.integrate_n_steps(x, t0, nSteps, dt);
