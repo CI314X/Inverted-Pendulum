@@ -1,2 +1,11 @@
 # Inverted-Pendulum
 Test problem for DragonTreeLabs
+
+Compile: $ g++ -I /usr/include/eigen3/ main.cpp -o test
+
+Run: $ ./test x1 x2 x3 x4 x5
+
+x1 - start x, x2 - x_dot, x3 - theta, x4 - theta_dot, x5 - final x.
+
+Libraries - control-toolbox and OpenCV.
+
