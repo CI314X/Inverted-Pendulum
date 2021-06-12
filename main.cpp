@@ -8,7 +8,6 @@ int main(int argc, char** argv)
     const size_t state_dim = 4;
     const size_t control_dim = 1;
     
-
     ct::core::ControlVector<control_dim> u;  // control
     u.setZero();
     
