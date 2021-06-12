@@ -11,7 +11,6 @@ int main(int argc, char** argv)
 
     const size_t state_dim = 4;
     const size_t control_dim = 1;
-    
 
     ct::core::ControlVector<control_dim> u;  // control
     u.setZero();
@@ -59,10 +58,7 @@ int main(int argc, char** argv)
 
     ct::core::StateVector<state_dim> x0;  // initial state
     x0 << atof(argv[1]), atof(argv[2]), atof(argv[3]), atof(argv[4]);
-   // x0(0) = atof(argv[1]);
-   // x0(1) = atof(argv[2]);
-    //x0(2) = atof(argv[3]);
-    x0(3) = atof(argv[4]);
+
     //x0(0) = 0.0;
     //x0(1) = 0.0;
     //x0(2) = 0.0; // angle deviation
@@ -75,7 +71,6 @@ int main(int argc, char** argv)
     x1(2) = 0.0;
     x1(3) = 0.0;
 
-
     double t = 0.0;
     double dt = 0.1;
     double T = 5.0;
@@ -83,12 +78,12 @@ int main(int argc, char** argv)
     Eigen::VectorXd y(state_dim); // current_state (t)
     Eigen::VectorXd yn(state_dim); // future_state (t + dt)
 
-    y = x0;
-
     std::ofstream fout; // file
     fout.open("out1.txt"); 
     fout << "t\tx\tx_dot\ttheta\ttheta_dot\n";
+
     double eps = 1e-4;  // accuracy of the finish position
+    y = x0;
     while ((y - x1).squaredNorm() >= eps)
     {
         fout << t << "\t" << y(0) << "\t" << y(1) << "\t" << y(2) << "\t" << y(3) << "\n";
