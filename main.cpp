@@ -1,8 +1,7 @@
 #include <iostream>
 #include <ct/optcon/optcon.h>  // also includes ct_core
 #include <Eigen/Dense>
-#include <cmath>
-#include <vector>
+//#include <cmath>
 #include <fstream>
 
 int main(int argc, char** argv)
@@ -63,17 +62,17 @@ int main(int argc, char** argv)
     //x0(1) = 0.0;
     //x0(2) = 0.0; // angle deviation
     //x0(3) = 0.5;
-    std::cout << "Initial state: " <<x0(0) << "\t" << x0(1) << "\t" << x0(2) << "\t" << x0(3) << std::endl;
+    std::cout << "Initial state: " << x0(0) << "\t" << x0(1) << "\t" << x0(2) << "\t" << x0(3) << std::endl;
     ct::core::StateVector<state_dim> x1;  // final state
     //x1(0) = 1.0;
     x1(0) = atof(argv[5]);
     x1(1) = 0.0;
     x1(2) = 0.0;
     x1(3) = 0.0;
-    std::cout << "Final state: " <<x1(0) << "\t" << x1(1) << "\t" << x1(2) << "\t" << x1(3) << std::endl;
+    std::cout << "Final state  : " << x1(0) << "\t" << x1(1) << "\t" << x1(2) << "\t" << x1(3) << std::endl;
+
     double t = 0.0;
     double dt = 0.1;
-    double T = 5.0;
     
     Eigen::VectorXd y(state_dim); // current_state (t)
     Eigen::VectorXd yn(state_dim); // future_state (t + dt)
@@ -86,14 +85,14 @@ int main(int argc, char** argv)
     y = x0;
     while ((y - x1).squaredNorm() >= eps)
     {
-        fout << t << "\t" << y(0) << "\t" << y(1) << "\t" << y(2) << "\t" << y(3) << "\n";
+        fout << t << "\t" << std::setprecision(4) << y(0) << "\t" << y(1) << "\t" << y(2) << "\t" << y(3) << "\n";
         
         yn = y + dt * (A * y - B * K * (y - x1));
         y = yn;
         t += dt;
     }
 
-    std::cout << "Time for stabilization: " << t << std::endl;
+    std::cout << "Stabilization time: " << t << std::endl;
     fout.close(); 
     return 0;
 }
