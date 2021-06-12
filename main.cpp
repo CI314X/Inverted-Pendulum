@@ -41,10 +41,10 @@ int main(int argc, char** argv)
     Eigen::Matrix<double, control_dim, control_dim> R;
     R << 0.001;
 
-    std::cout << "A: " << std::endl << A << std::endl << std::endl;
-    std::cout << "B: " << std::endl << B << std::endl << std::endl;
-    std::cout << "Q: " << std::endl << Q << std::endl << std::endl;
-    std::cout << "R: " << std::endl << R << std::endl << std::endl;
+    //std::cout << "A: " << std::endl << A << std::endl << std::endl;
+    //std::cout << "B: " << std::endl << B << std::endl << std::endl;
+    //std::cout << "Q: " << std::endl << Q << std::endl << std::endl;
+    //std::cout << "R: " << std::endl << R << std::endl << std::endl;
 
     ct::optcon::LQR<state_dim, control_dim> lqrSolver;
     ct::core::FeedbackMatrix<state_dim, control_dim> K;
@@ -53,7 +53,7 @@ int main(int argc, char** argv)
     bool solveRiccatiIteratively = true;
     lqrSolver.compute(Q, R, A, B, K, RisDiagonal, solveRiccatiIteratively);
 
-    std::cout << "LQR gain matrix:" << std::endl << K << std::endl;
+    //std::cout << "LQR gain matrix:" << std::endl << K << std::endl;
     //std::cout << (A - B * K).eigenvalues() << std::endl << std::endl;
 
     ct::core::StateVector<state_dim> x0;  // initial state
@@ -63,14 +63,14 @@ int main(int argc, char** argv)
     //x0(1) = 0.0;
     //x0(2) = 0.0; // angle deviation
     //x0(3) = 0.5;
-
-    ct::core::StateVector<state_dim> x1;  // finish state
+    std::cout << "Initial state: " <<x0(0) << "\t" << x0(1) << "\t" << x0(2) << "\t" << x0(3) << std::endl;
+    ct::core::StateVector<state_dim> x1;  // final state
     //x1(0) = 1.0;
     x1(0) = atof(argv[5]);
     x1(1) = 0.0;
     x1(2) = 0.0;
     x1(3) = 0.0;
-
+    std::cout << "Final state: " <<x1(0) << "\t" << x1(1) << "\t" << x1(2) << "\t" << x1(3) << std::endl;
     double t = 0.0;
     double dt = 0.1;
     double T = 5.0;
@@ -82,17 +82,17 @@ int main(int argc, char** argv)
     fout.open("out1.txt"); 
     fout << "t\tx\tx_dot\ttheta\ttheta_dot\n";
 
-    double eps = 1e-4;  // accuracy of the finish position
+    double eps = 1e-4;  // accuracy of the final position for L2 norm
     y = x0;
     while ((y - x1).squaredNorm() >= eps)
     {
         fout << t << "\t" << y(0) << "\t" << y(1) << "\t" << y(2) << "\t" << y(3) << "\n";
-        //std::cout << A.block<1, 4>(0, 0) << std::endl;
         
         yn = y + dt * (A * y - B * K * (y - x1));
         y = yn;
         t += dt;
     }
+
     std::cout << "Time for stabilization: " << t << std::endl;
     fout.close(); 
     return 0;
