@@ -103,7 +103,7 @@ void MyCart( cv::Mat img, cv::Point2d left, cv::Point2d right )
   cv::rectangle( img,
          left,
          right,
-         cv::Scalar( 0, 255, 255 ),
+         cv::Scalar( 255, 0, 255 ),
          cv::FILLED,
          cv::LINE_8 );
 }
