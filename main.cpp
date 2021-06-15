@@ -24,11 +24,11 @@ int main(int argc, char** argv)
 
     // parameters of an environment and Cart
 
-    double m = 1.0; // mass of the pole                         //  video - 1.0
-    double M = 5.0; // mass of the Cart          video - 5.0
-    double L = 2.0; // length of the pole                   video - 2.0
-    double g = 9.81; // acceleration due to gravity                        //  video - 10.0
-    double d = 1.0; // coefficient of friction   video - 1.0
+    double m = 1.0; // mass of the pole                           video - 1.0
+    double M = 5.0; // mass of the Cart                           video - 5.0
+    double L = 2.0; // length of the pole                         video - 2.0
+    double g = 9.81; // acceleration due to gravity               video - 10.0
+    double d = 1.0; // coefficient of friction                    video - 1.0
 
     Eigen::Matrix<double, state_dim, state_dim> A;
     A.row(0) << 0.0, 1.0, 0.0, 0.0;
