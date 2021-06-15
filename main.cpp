@@ -1,25 +1,26 @@
 #include <iostream>
 #include <ct/optcon/optcon.h>  // also includes ct_core
 #include <Eigen/Dense>
-//#include <cmath>
+#include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/highgui.hpp>
 #include <fstream>
 
 int main(int argc, char** argv)
 {
     // system SI
-
     const size_t state_dim = 4;
     const size_t control_dim = 1;
 
     ct::core::ControlVector<control_dim> u;  // control
     u.setZero();
-    
+
     // parameters of an environment and Cart
 
-    double m = 1.0;                          //  video - 1.0
+    double m = 1.0; // mass of the pole                         //  video - 1.0
     double M = 5.0; // mass of the Cart          video - 5.0
-    double L = 2.0; // length                    video - 2.0
-    double g = 9.81;                         //  video - 10.0
+    double L = 2.0; // length of the pole                   video - 2.0
+    double g = 9.81; // acceleration due to gravity                        //  video - 10.0
     double d = 1.0; // coefficient of friction   video - 1.0
 
     Eigen::Matrix<double, state_dim, state_dim> A;
@@ -29,7 +30,7 @@ int main(int argc, char** argv)
     A.row(3) << 0.0, -d / M / L, g * (m + M) / M / L, 0.0;
 
     Eigen::Matrix<double, state_dim, control_dim> B;
-    B << 0.0, 1.0 / M, 0.0, 1.0 / M / L;              
+    B << 0.0, 1.0 / M, 0.0, 1.0 / M / L;
 
     Eigen::Matrix<double, state_dim, state_dim> Q;
     Q.row(0) << 1.0, 0.0, 0.0, 0.0;
@@ -40,20 +41,12 @@ int main(int argc, char** argv)
     Eigen::Matrix<double, control_dim, control_dim> R;
     R << 0.001;
 
-    //std::cout << "A: " << std::endl << A << std::endl << std::endl;
-    //std::cout << "B: " << std::endl << B << std::endl << std::endl;
-    //std::cout << "Q: " << std::endl << Q << std::endl << std::endl;
-    //std::cout << "R: " << std::endl << R << std::endl << std::endl;
-
     ct::optcon::LQR<state_dim, control_dim> lqrSolver;
     ct::core::FeedbackMatrix<state_dim, control_dim> K;
 
     bool RisDiagonal = true;
     bool solveRiccatiIteratively = true;
     lqrSolver.compute(Q, R, A, B, K, RisDiagonal, solveRiccatiIteratively);
-
-    //std::cout << "LQR gain matrix:" << std::endl << K << std::endl;
-    //std::cout << (A - B * K).eigenvalues() << std::endl << std::endl;
 
     ct::core::StateVector<state_dim> x0;  // initial state - x, x_dot, theta, theta_dot
     x0 << atof(argv[1]), atof(argv[2]), atof(argv[3]), atof(argv[4]);
@@ -65,12 +58,12 @@ int main(int argc, char** argv)
 
     double t = 0.0;
     double dt = 0.1;
-    
+
     Eigen::VectorXd y(state_dim); // current_state (t)
     Eigen::VectorXd yn(state_dim); // future_state (t + dt)
 
     std::ofstream fout; // file
-    fout.open("out1.txt"); 
+    fout.open("out1.txt");
     fout << "t\tx\tx_dot\ttheta\ttheta_dot\tcontrol\n";
 
     double eps = 1e-4;  // accuracy of the final position for L2 norm
@@ -85,6 +78,6 @@ int main(int argc, char** argv)
 
     std::cout << "Stabilization time: " << t << std::endl;
     std::cout << "Final state: " << std::setprecision(6) << y(0) << "\t" << y(1) << "\t" << y(2) << "\t" << y(3) << std::endl;
-    fout.close(); 
+    fout.close();
     return 0;
 }
