@@ -11,7 +11,7 @@
 void MyPole( cv::Mat img, cv::Point2d center );
 void MyCart( cv::Mat img, cv::Point2d left, cv::Point2d right );
 void MyLine( cv::Mat img, cv::Point2d start, cv::Point2d end );
-void draw_image(cv::Mat image, double x, double theta);
+void draw_image(cv::Mat image, double x, double theta, char name_image[]);
 
 int main(int argc, char** argv)
 {
@@ -85,12 +85,9 @@ int main(int argc, char** argv)
         fout << t << "\t" << std::setprecision(4) << y(0) << "\t" << y(1) << "\t" << y(2) << "\t" << y(3) << "\t" << -K * (y - x1) <<"\n";
         y = yn;
         t += dt;
-        image = cv::Mat::zeros( w, w, CV_8UC3 ); // обнуление
-        draw_image(image, y(0), y(2));
-        cv::namedWindow(name_image, cv::WINDOW_NORMAL);
-        cv::resizeWindow(name_image, 600, 600);
-        cv::imshow( name_image, image );
-        cv::moveWindow( name_image, 800, 200 );
+
+        draw_image(image, y(0), y(2), name_image);
+
         cv::waitKey( 30 ); // time betweeen different states
 
     }
@@ -133,7 +130,7 @@ void MyLine( cv::Mat img, cv::Point2d start, cv::Point2d end )
     lineType );
 }
 
-void draw_image(cv::Mat image, double x, double theta)
+void draw_image(cv::Mat image, double x, double theta, char name_image[])
 {
   double LENGTH_OF_CART = w / 5;
   double HEIGHT_OF_CART = w / 20;
@@ -155,8 +152,12 @@ void draw_image(cv::Mat image, double x, double theta)
   cart_left.y = CENTER_OF_PICTURE_Y - 0.5 * HEIGHT_OF_CART;
   cart_right.x = x + CENTER_OF_PICTURE_X + 0.5 * LENGTH_OF_CART;
   cart_right.y = CENTER_OF_PICTURE_Y + 0.5 * HEIGHT_OF_CART;
-
+  image = cv::Mat::zeros( w, w, CV_8UC3 );
   MyPole( image, pole_center );
   MyLine( image, pole_bottom, pole_center );
   MyCart( image, cart_left, cart_right);
+  cv::namedWindow(name_image, cv::WINDOW_NORMAL);
+  cv::resizeWindow(name_image, 600, 600);
+  cv::imshow( name_image, image );
+  cv::moveWindow( name_image, 800, 200 );
 }
