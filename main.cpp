@@ -44,11 +44,11 @@ int main(int argc, char **argv)
   Eigen::Matrix<double, state_dim, state_dim> Q;
   Q.row(0) << 1.0, 0.0, 0.0, 0.0;
   Q.row(1) << 0.0, 1.0, 0.0, 0.0;
-  Q.row(2) << 0.0, 0.0, 10000.0, 0.0;
-  Q.row(3) << 0.0, 0.0, 0.0, 1000.0;
+  Q.row(2) << 0.0, 0.0, 100000.0, 0.0;
+  Q.row(3) << 0.0, 0.0, 0.0, 10000.0;
 
   Eigen::Matrix<double, control_dim, control_dim> R;
-  R << 300.0;
+  R << 3000.0;
 
   ct::optcon::LQR<state_dim, control_dim> lqrSolver;
   ct::core::FeedbackMatrix<state_dim, control_dim> K;
