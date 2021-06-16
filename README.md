@@ -1,7 +1,7 @@
 # Inverted-Pendulum
 Test problem for DragonTreeLabs
 
-Compile: $ g++ main.cpp -o test -I /usr/include/eigen3/ -I /usr/local/include/opencv4/ -lopencv_core -lopencv_imgproc -lopencv_highgui
+Compile: ./compiler
 
 Run: $ ./test x1 x2 x3 x4 x5
 
