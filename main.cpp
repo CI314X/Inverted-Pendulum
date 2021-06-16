@@ -18,7 +18,7 @@ int main(int argc, char** argv)
     // system SI
     const size_t state_dim = 4;
     const size_t control_dim = 1;
-
+    
     ct::core::ControlVector<control_dim> u;  // control
     u.setZero();
 
@@ -43,7 +43,7 @@ int main(int argc, char** argv)
     Q.row(0) << 1.0, 0.0, 0.0, 0.0;
     Q.row(1) << 0.0, 1.0, 0.0, 0.0;
     Q.row(2) << 0.0, 0.0, 30.0, 0.0;
-    Q.row(3) << 0.0, 0.0, 0.0, 10.0;
+    Q.row(3) << 0.0, 0.0, 0.0, 30.0;
 
     Eigen::Matrix<double, control_dim, control_dim> R;
     R << 1.1;
@@ -88,7 +88,7 @@ int main(int argc, char** argv)
 
         draw_image(image, y(0), y(2), name_image);
 
-        cv::waitKey( 30 ); // time betweeen different states
+        cv::waitKey( 1500 ); // time betweeen different states
 
     }
     fout.close();
@@ -134,7 +134,7 @@ void draw_image(cv::Mat image, double x, double theta, char name_image[])
 {
   double LENGTH_OF_CART = w / 5;
   double HEIGHT_OF_CART = w / 20;
-  double LENGTH_OF_POLE = w / 10;
+  double LENGTH_OF_POLE = w / 5;
   double CENTER_OF_PICTURE_X = w / 2;
   double CENTER_OF_PICTURE_Y = w / 2;
 
