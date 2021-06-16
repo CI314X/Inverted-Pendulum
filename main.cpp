@@ -1,16 +1,18 @@
 #include <iostream>
-#include <ct/optcon/optcon.h> // also includes ct_core
+#include <ct/optcon/optcon.h>
 #include <Eigen/Dense>
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
 #include <fstream>
 
-#define w 400
+#define w 1200
+#define PI 3.1415
 
 void MyPole(cv::Mat img, cv::Point2d center);
 void MyCart(cv::Mat img, cv::Point2d left, cv::Point2d right);
 void MyLine(cv::Mat img, cv::Point2d start, cv::Point2d end);
+void MyGround(cv::Mat img);
 void draw_image(cv::Mat image, double x, double theta, char name_image[]);
 
 int main(int argc, char **argv)
@@ -42,16 +44,16 @@ int main(int argc, char **argv)
   Eigen::Matrix<double, state_dim, state_dim> Q;
   Q.row(0) << 1.0, 0.0, 0.0, 0.0;
   Q.row(1) << 0.0, 1.0, 0.0, 0.0;
-  Q.row(2) << 0.0, 0.0, 30.0, 0.0;
-  Q.row(3) << 0.0, 0.0, 0.0, 30.0;
+  Q.row(2) << 0.0, 0.0, 10000.0, 0.0;
+  Q.row(3) << 0.0, 0.0, 0.0, 1000.0;
 
   Eigen::Matrix<double, control_dim, control_dim> R;
-  R << 1.1;
+  R << 300.0;
 
   ct::optcon::LQR<state_dim, control_dim> lqrSolver;
   ct::core::FeedbackMatrix<state_dim, control_dim> K;
 
-  bool RisDiagonal = true;
+  bool RisDiagonal = true; // is R a diagonal matrix - yes
   bool solveRiccatiIteratively = true;
   lqrSolver.compute(Q, R, A, B, K, RisDiagonal, solveRiccatiIteratively);
 
@@ -73,25 +75,30 @@ int main(int argc, char **argv)
   fout.open("out1.txt");
   fout << "t\tx\tx_dot\ttheta\ttheta_dot\tcontrol\n";
 
-  double eps = 1e-4; // accuracy of the final position for L2 norm
+  double eps = 1e-1; // accuracy of the final position for L2 norm
   y = x0;
 
   char name_image[] = "Cart";
   cv::Mat image;
-
+  double max_abs_theta = 0;
   while ((y - x1).squaredNorm() >= eps)
   {
     yn = y + dt * (A * y - B * K * (y - x1));
+    if (abs(y(2)) > max_abs_theta)
+    {
+      max_abs_theta = abs(y(2));
+    }
     fout << t << "\t" << std::setprecision(4) << y(0) << "\t" << y(1) << "\t" << y(2) << "\t" << y(3) << "\t" << -K * (y - x1) << "\n";
     y = yn;
     t += dt;
 
     draw_image(image, y(0), y(2), name_image);
 
-    cv::waitKey(1500); // time betweeen different states
+    cv::waitKey(1); // time between different states
   }
   fout.close();
   std::cout << "Stabilization time: " << t << std::endl;
+  std::cout << "Max  abs theta: " << max_abs_theta / PI * 180 << std::endl;
   std::cout << "Final state: " << std::setprecision(6) << y(0) << "\t" << y(1) << "\t" << y(2) << "\t" << y(3) << std::endl;
   cv::waitKey(0);
   return 0;
@@ -110,10 +117,10 @@ void MyPole(cv::Mat img, cv::Point2d center)
 {
   cv::circle(img,
              center,
-             w / 40,                  //radius
-             cv::Scalar(255, 0, 255), // color
+             w / 40,                //radius
+             cv::Scalar(0, 0, 255), // color
              //Scalar( a, b, c )
-             //Blue = a, Green = b and Red = c
+             //Blue, Green,Red
              cv::FILLED,
              cv::LINE_8);
 }
@@ -124,14 +131,25 @@ void MyLine(cv::Mat img, cv::Point2d start, cv::Point2d end)
   cv::line(img,
            start,
            end,
-           cv::Scalar(255, 0, 255),
+           cv::Scalar(255, 255, 255),
+           thickness,
+           lineType);
+}
+void MyGround(cv::Mat img, double ground)
+{
+  int thickness = 1;
+  int lineType = cv::LINE_8;
+  cv::line(img,
+           cv::Point2d(0, ground),
+           cv::Point2d(w, ground),
+           cv::Scalar(255, 255, 255),
            thickness,
            lineType);
 }
 
 void draw_image(cv::Mat image, double x, double theta, char name_image[])
 {
-  double LENGTH_OF_CART = w / 5;
+  double LENGTH_OF_CART = w / 10;
   double HEIGHT_OF_CART = w / 20;
   double LENGTH_OF_POLE = w / 5;
   double CENTER_OF_PICTURE_X = w / 2;
@@ -140,9 +158,9 @@ void draw_image(cv::Mat image, double x, double theta, char name_image[])
   cv::Point2d pole_center = cv::Point2d(0.0, 0.0);
   cv::Point2d cart_left = cv::Point2d(0.0, 0.0);
   cv::Point2d cart_right = cv::Point2d(0.0, 0.0);
-  cv::Point2d pole_bottom = cv::Point2d(0.0, 0.0); // нижний конец палки
+  cv::Point2d pole_bottom = cv::Point2d(0.0, 0.0); // bottom of the pole
 
-  pole_center.x = (x + CENTER_OF_PICTURE_X) + LENGTH_OF_POLE * sin(theta); // смещение на w/2
+  pole_center.x = (x + CENTER_OF_PICTURE_X) + LENGTH_OF_POLE * sin(theta);
   pole_center.y = CENTER_OF_PICTURE_Y - (0.5 * HEIGHT_OF_CART + LENGTH_OF_POLE * cos(theta));
   pole_bottom.x = x + CENTER_OF_PICTURE_X;
   pole_bottom.y = CENTER_OF_PICTURE_Y - 0.5 * HEIGHT_OF_CART;
@@ -153,9 +171,11 @@ void draw_image(cv::Mat image, double x, double theta, char name_image[])
   cart_right.y = CENTER_OF_PICTURE_Y + 0.5 * HEIGHT_OF_CART;
   image = cv::Mat::zeros(w, w, CV_8UC3);
 
-  MyPole(image, pole_center);
+  MyGround(image, CENTER_OF_PICTURE_Y + HEIGHT_OF_CART / 2);
   MyLine(image, pole_bottom, pole_center);
+  MyPole(image, pole_center);
   MyCart(image, cart_left, cart_right);
+
   cv::namedWindow(name_image, cv::WINDOW_NORMAL);
   cv::resizeWindow(name_image, 600, 600);
   cv::imshow(name_image, image);
