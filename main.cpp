@@ -26,9 +26,9 @@ int main(int argc, char **argv)
 
   // parameters of an environment and Cart
 
-  double m = 1.0;  // mass of the pole                           video - 1.0
+  double m = 4.0;  // mass of the pole                           video - 1.0
   double M = 5.0;  // mass of the Cart                           video - 5.0
-  double L = 2.0;  // length of the pole                         video - 2.0
+  double L = 3.0;  // length of the pole                         video - 2.0
   double g = 9.81; // acceleration due to gravity               video - 10.0
   double d = 1.0;  // coefficient of friction                    video - 1.0
 
@@ -44,11 +44,11 @@ int main(int argc, char **argv)
   Eigen::Matrix<double, state_dim, state_dim> Q;
   Q.row(0) << 1.0, 0.0, 0.0, 0.0;
   Q.row(1) << 0.0, 1.0, 0.0, 0.0;
-  Q.row(2) << 0.0, 0.0, 100000.0, 0.0;
-  Q.row(3) << 0.0, 0.0, 0.0, 10000.0;
+  Q.row(2) << 0.0, 0.0, 10000.0, 0.0; // 100000
+  Q.row(3) << 0.0, 0.0, 0.0, 10000.0;  // 10000
 
   Eigen::Matrix<double, control_dim, control_dim> R;
-  R << 3000.0;
+  R << 100.0;
 
   ct::optcon::LQR<state_dim, control_dim> lqrSolver;
   ct::core::FeedbackMatrix<state_dim, control_dim> K;
@@ -62,7 +62,7 @@ int main(int argc, char **argv)
   std::cout << "Initial state     : " << x0(0) << "\t" << x0(1) << "\t" << x0(2) << "\t" << x0(3) << std::endl;
 
   ct::core::StateVector<state_dim> x1; // final state - x, x_dot, theta, theta_dot
-  x1 << atof(argv[5]), 0.0, 0.0, 0.0;
+  x1 << atof(argv[5]) + 0.1, 0.0, 0.0, 0.0;
   std::cout << "Wanted Final state: " << x1(0) << "\t" << x1(1) << "\t" << x1(2) << "\t" << x1(3) << std::endl;
 
   double t = 0.0;
@@ -82,8 +82,11 @@ int main(int argc, char **argv)
   cv::Mat image;
   double max_abs_theta = 0;
   while ((y - x1).squaredNorm() >= eps)
+  //while (abs(y(0) - x1(0)) > 1)
   {
-    yn = y + dt * (A * y - B * K * (y - x1));
+    u = - K * (y - x1);
+    //yn = y + dt * (A * y - B * K * (y - x1));
+    yn = y + dt * (A * y + B * u);
     if (abs(y(2)) > max_abs_theta)
     {
       max_abs_theta = abs(y(2));
@@ -94,7 +97,7 @@ int main(int argc, char **argv)
 
     draw_image(image, y(0), y(2), name_image);
 
-    cv::waitKey(1); // time between different states
+    cv::waitKey(10); // time between different states
   }
   fout.close();
   std::cout << "Stabilization time: " << t << std::endl;
@@ -149,7 +152,7 @@ void MyGround(cv::Mat img, double ground)
 
 void draw_image(cv::Mat image, double x, double theta, char name_image[])
 {
-  double LENGTH_OF_CART = w / 10;
+  double LENGTH_OF_CART = w / 20;
   double HEIGHT_OF_CART = w / 20;
   double LENGTH_OF_POLE = w / 5;
   double CENTER_OF_PICTURE_X = w / 2;
