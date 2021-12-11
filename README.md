@@ -1,7 +1,10 @@
 # Inverted-Pendulum
 Test problem for DragonTreeLabs
 
-Compile: ./compiler
+Compile:
+```console
+user@user:~$ ./compiler
+```
 
 Run: $ ./test x1 x2 x3 x4 x5
 
