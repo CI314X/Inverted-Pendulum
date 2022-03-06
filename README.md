@@ -10,7 +10,7 @@ user@user:~$ ./compiler
 ```console
 user@user:~$ ./test x1 x2 x3 x4 x5
 ```
-where x1 - start x-coordinate, x2 - x_dot (initial velocity), x3 - theta (initial angle), x4 - theta_dot, x5 - final x-coorindate.
+where x1 - start x-coordinate, x2 - x_dot (initial velocity), x3 - theta (initial angle), x4 - theta_dot, x5 - final x-coordinate.
 
 Libraries - control-toolbox and OpenCV.
 ### Example of run
