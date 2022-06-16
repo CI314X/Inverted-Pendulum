@@ -18,7 +18,9 @@ Libraries - control-toolbox and OpenCV.
 user@user:~$ ./test 0.0 0.0 -0.1 0.3 200.0
 ```
 
-<video width="320" height="240" controls>
+[[https://user-images.githubusercontent.com/58986949/115314310-805b2780-a1a7-11eb-8558-648a367ea231.mp4](https://github.com/CI314X/Inverted-Pendulum/blob/master/demo.MOV)](https://github.com/CI314X/Inverted-Pendulum/blob/master/demo.MOV)
+
+<!-- <video width="320" height="240" controls>
   <source src="demo.MOV" type="video/mp4">
 </video>
-
+ -->
