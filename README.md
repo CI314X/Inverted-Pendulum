@@ -18,7 +18,7 @@ Libraries - control-toolbox and OpenCV.
 user@user:~$ ./test 0.0 0.0 -0.1 0.3 200.0
 ```
 
-![](demo.MOV)
+![name](https://github.com/CI314X/Inverted-Pendulum/blob/master/demo.MOV)
 
 <!-- <video width="320" height="240" controls>
   <source src="demo.MOV" type="video/mp4">
